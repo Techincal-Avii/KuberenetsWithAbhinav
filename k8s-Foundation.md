@@ -1,31 +1,298 @@
-Kubernets - This tool help us to manage the containerized applications
----------------------------
-Why k8s - It solves 5 major issues - 1. Self-healing , if conatiner crashed it automatically restarts. 2. Autoscalling - If traffic increases it auto scales the Pods. 3. Rescheduling - If machine died, it automatically reschedule it to the availble nods. 4. Rolloing Updates - If we have new version deploy it need zero downtime. 5. Declrative Config - We can manage 500 container nut modigying the YMAl file.
------------------------------
-k8s Architecture- 
-Control Plane the boss (Simply who takes decisions)
-Worker Nodes - these are simply workers (who apply the decisions containers are run in worker node)
-COMPONENTS OF CONTROL PLANE -
-1. API Server - This is the command line tool where client run the commands
-2. ETCD - This is the  Database of the server all the states of the containers are store here like pods, status of the pods allocation of the pods. if this will corrupted full cluster will died.
-3. SCHEDULER - It simply schedule or decides the pod will run on which availble node and checks the cpu ram.
-4. CONTROLL MANAGER - It continuously spys the cluseter. It is responsible for self healing and checks that the current state of the cluster is matches with the desired state. Is state mismatches then is trigeerd reconciliation.
-Worker Node -
-1. KUBELET - Its the agent availble on every node. Its takes the order fron control plane and checks the helath of the pods.
-2. KUBE PROXY - Its handles networking and responsible for traffic is reaching to the pods.
-3. CONTAINER RUNTIME -It actually run the conatiner.
----------------------------------
-THE FLOW
+# Kubernetes Fundamentals
+
+## What is Kubernetes?
+
+Kubernetes (K8s) is a container orchestration tool used to manage containerized applications at scale.
+
+It helps in:
+- Deploying containers
+- Scaling applications
+- Managing failures
+- Automating operations
+
+---
+
+# Why Kubernetes?
+
+Kubernetes solves five major problems:
+
+## 1. Self-Healing
+
+If a container crashes, Kubernetes automatically restarts it.
+
+Example:
+- Container crashes
+- Kubernetes detects failure
+- New container is started automatically
+
+---
+
+## 2. Auto Scaling
+
+If traffic increases, Kubernetes can automatically create more Pods.
+
+Benefits:
+- Handles high traffic
+- Better performance
+- Cost optimization
+
+---
+
+## 3. Rescheduling
+
+If a worker node fails:
+
+- Kubernetes detects node failure
+- Pods are automatically moved to healthy nodes
+
+This ensures high availability.
+
+---
+
+## 4. Rolling Updates
+
+Used for deploying new application versions without downtime.
+
+Benefits:
+- Zero downtime deployments
+- Easy rollback
+- Better user experience
+
+---
+
+## 5. Declarative Configuration
+
+Kubernetes uses YAML files to define the desired state.
+
+Example:
+
+```yaml
+replicas: 3
+image: nginx
+```
+
+Instead of manually managing hundreds of containers, we simply update the YAML file.
+
+---
+
+# Kubernetes Architecture
+
+Kubernetes consists of two major components:
+
+## 1. Control Plane
+
+The brain of Kubernetes.
+
+Responsible for:
+- Taking decisions
+- Managing cluster state
+- Scheduling workloads
+
+---
+
+## 2. Worker Nodes
+
+The machines where applications actually run.
+
+Responsible for:
+- Running Pods
+- Executing workloads
+- Serving traffic
+
+---
+
+# Control Plane Components
+
+## 1. API Server
+
+Acts as the entry point for Kubernetes.
+
+All commands are received through the API Server.
+
+Example:
+
+```bash
+kubectl get pods
+kubectl apply -f pod.yaml
+```
+
+Responsibilities:
+- Receives requests
+- Validates requests
+- Communicates with other components
+
+---
+
+## 2. ETCD
+
+The database of Kubernetes.
+
+Stores:
+- Pods
+- Services
+- Nodes
+- Secrets
+- ConfigMaps
+- Cluster State
+
+Important:
+
+If ETCD is lost or corrupted, the entire cluster state is lost.
+
+---
+
+## 3. Scheduler
+
+Responsible for deciding where Pods should run.
+
+Checks:
+- Available nodes
+- CPU availability
+- Memory availability
+- Node constraints
+
+Example:
+
+```text
+Pod Created
+↓
+Scheduler Selects Node-2
+↓
+Pod Scheduled
+```
+
+---
+
+## 4. Controller Manager
+
+Acts as the monitoring component of Kubernetes.
+
+Responsibilities:
+- Self-healing
+- Replica management
+- Node monitoring
+- Reconciliation
+
+---
+
+### What is Reconciliation?
+
+Controller Manager continuously compares:
+
+```text
+Desired State
+vs
+Current State
+```
+
+If a mismatch is detected, Kubernetes automatically fixes it.
+
+Example:
+
+Desired Pods = 3
+
+Current Pods = 2
+
+Result:
+
+Kubernetes automatically creates 1 new Pod.
+
+---
+
+# Worker Node Components
+
+## 1. Kubelet
+
+Agent running on every worker node.
+
+Responsibilities:
+- Receives instructions from Control Plane
+- Starts Pods
+- Monitors Pod health
+- Reports status back to API Server
+
+---
+
+## 2. Kube Proxy
+
+Responsible for networking.
+
+Responsibilities:
+- Service networking
+- Load balancing
+- Traffic routing
+
+Ensures traffic reaches the correct Pod.
+
+---
+
+## 3. Container Runtime
+
+Component that actually runs containers.
+
+Examples:
+- containerd
+- CRI-O
+
+Responsibilities:
+- Pull images
+- Create containers
+- Start containers
+
+---
+
+# Kubernetes Request Flow
+
+When we run:
+
+```bash
+kubectl apply -f pod.yaml
+```
+
+The following sequence happens:
+
+```text
 kubectl apply -f pod.yaml
         ↓
-   API Server (request receive ki)
+API Server
+(Request Received)
         ↓
-   etcd (desired state save ki — "1 pod chahiye")
+ETCD
+(Desired State Stored)
         ↓
-   Scheduler (decide kiya — Node 2 pe jaayega)
+Scheduler
+(Selects Best Node)
         ↓
-   API Server → Kubelet on Node 2
+API Server
         ↓
-   Kubelet → Container Runtime
+Kubelet on Worker Node
         ↓
-   Container starts running 
+Container Runtime
+        ↓
+Container Starts Running
+```
+
+---
+
+# Interview Summary
+
+### Control Plane Components
+
+- API Server
+- ETCD
+- Scheduler
+- Controller Manager
+
+### Worker Node Components
+
+- Kubelet
+- Kube Proxy
+- Container Runtime
+
+### Key Kubernetes Features
+
+- Self-Healing
+- Auto Scaling
+- Rescheduling
+- Rolling Updates
+- Declarative Configuration
